@@ -117,3 +117,10 @@ If you're running an environment that uses systemd (i.e., SLES 12), use the ```s
   }
 ```
 
+## Acknowledgements
+This module was originally written by:
+* Ben Hallett
+* Hailey Martin
+* Kasper Jamrozek
+* Kurt Gardiner
+* Tony Brown
