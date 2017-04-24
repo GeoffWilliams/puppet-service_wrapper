@@ -1,0 +1,15 @@
+{
+  "name": "geoffwilliams/service_wrapper",
+  "version": "0.1.0",
+  "author": "geoffwilliams",
+  "summary": "Magically create systemd unit files and sysvinit init scripts using puppet",
+  "license": "Apache-2.0",
+  "source": "https://github.com/GeoffWilliams/puppet-service_wrapper",
+  "project_page": "https://github.com/GeoffWilliams/puppet-service_wrapper",
+  "issues_url": "https://github.com/GeoffWilliams/puppet-service_wrapper/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ],
+  "data_provider": null
+}
+

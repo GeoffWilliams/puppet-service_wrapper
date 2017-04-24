@@ -1,0 +1,19 @@
+[Unit]
+Description=<%= @description %>
+
+[Service]
+Type=simple
+User=<%= @user %>
+<% @environment.each do |env| -%>
+Environment=<%= env %>
+<% end -%>
+WorkingDirectory=<%= @working_directory %>
+<% if @pre_command -%>
+ExecStartPre=<%= @pre_command %>
+<% end -%>
+ExecStart=<%= @command %>
+TimeoutSec=<%= @timeout_sec %>
+Restart=<%= @restart %>
+
+[Install]
+WantedBy=multi-user.target

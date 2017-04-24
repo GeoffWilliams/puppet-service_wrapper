@@ -1,0 +1,79 @@
+#!/bin/bash
+# <%= @description %>
+# chkconfig: 345 <%= sprintf('%02d',@start_priority) %> <%= sprintf('%02d',@kill_priority) %>
+# description: <%= @service_name %> service wrapper
+# processname: <%= @service_name %>
+
+PRE_COMMAND="<%= @pre_command %>"
+COMMAND="<%= @command %>"
+
+USER="<%= @user %>"
+NAME="<%= @service_name %>"
+LOGNAME="<%= @log_filename %>"
+DESC="<%= @description %>"
+PIDFILE="<%= @pid_file %>"
+SCRIPTNAME="/etc/init.d/${NAME}"
+
+killtree() {
+    local _pid=$1
+    local _sig=${2:-TERM}
+    kill -stop ${_pid} # needed to stop quickly forking parent from producing child between child killing and parent killing
+    for _child in $(ps -o pid --no-headers --ppid ${_pid}); do
+        killtree ${_child} ${_sig}
+    done
+    kill -${_sig} ${_pid}
+}
+
+case "$1" in
+start)
+        printf "%-50s" "Starting $NAME..."
+        $PRE_COMMAND
+        su - $USER -c "$COMMAND" >$LOGNAME 2>&1 &
+<%      if @manage_pid_file -%>
+        PID=$!
+        if [ -z $PID ]; then
+            printf "%s\n" "Fail"
+        else
+            echo $PID > $PIDFILE
+            printf "%s\n" "Ok"
+        fi
+<%      end -%>
+;;
+status)
+        printf "%-50s" "Checking $NAME..."
+        if [ -f $PIDFILE ]; then
+            PID=$(<$PIDFILE)
+            if [ -z "`ps axf | grep ${PID} | grep -v grep`" ]; then
+                printf "%s\n" "Process dead but pidfile exists"
+            else
+                echo "Running"
+            fi
+        else
+            printf "%s\n" "Service not running"
+        fi
+;;
+stop)
+        printf "%-50s" "Stopping $NAME"
+        PID=$(<$PIDFILE)
+        if [ -f $PIDFILE ]; then
+            killtree $PID 9
+            
+            printf "%s\n" "Ok"
+<%          if @manage_pid_file -%>
+            rm -f $PIDFILE
+<%          end -%>
+        else
+            printf "%s\n" "pidfile not found"
+        fi
+;;
+
+restart)
+        $0 stop
+        $0 start
+;;
+
+*)
+        echo "Usage: $0 {status|start|stop|restart}"
+        exit 1
+esac
+
